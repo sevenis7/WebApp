@@ -1,0 +1,36 @@
+﻿@page "/requests"
+@inject HttpClient client
+
+<h3>Requests</h3>
+
+@if(requests.Count() < 1)
+{
+    <span> Loading </span>
+}
+else
+{
+    <ul>
+        @foreach (var request in requests)
+        {
+            <li>
+                <a href="~/css/app.css"> @request.Status--- @request.User --- @request.Text </a>
+            </li>
+        }
+    </ul>
+}
+
+
+
+
+
+@code {
+    IEnumerable<Request> requests = new List<Request>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await client.GetFromJsonAsync<IEnumerable<Request>>("api/request");
+
+        if (result != null)
+            requests = result;
+    }
+}
