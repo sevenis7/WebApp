@@ -2,6 +2,6 @@
 {
     public class Project : TextContent
     {
-        public required string ImagePath { get; set; }
+        public required string Image { get; set; }
     }
 }

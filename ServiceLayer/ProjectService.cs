@@ -39,7 +39,7 @@ namespace ServiceLayer
 
             if (existingProjectById == null || project == null) return false;
 
-            existingProjectById.ImagePath = project.ImagePath;
+            existingProjectById.Image = project.Image;
             existingProjectById.Title = project.Title;
             existingProjectById.Description = project.Description;
 

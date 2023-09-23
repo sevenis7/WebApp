@@ -24,8 +24,8 @@ namespace DataLayer.Context
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
+            //Database.EnsureDeleted();
+            //Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -163,7 +163,7 @@ namespace DataLayer.Context
                 {
                     Id = 1,
                     Title = "Оработка кредитных заявок в режиме онлайн",
-                    ImagePath = @"C:\\Users\\callm\\Desktop\\sber.jpg",
+                    Image = Convert.ToBase64String(File.ReadAllBytes("C:\\Users\\callm\\Desktop\\m.jpg")),
                     Description = "Описание проектаОписание проектаОписание проекта"
                 }
             };
