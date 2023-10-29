@@ -1,20 +1,10 @@
 ﻿using DataLayer.Context;
 using DataLayer.Entities;
+using DataLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Repositories
 {
-    public interface IUserRepository
-    {
-        User? GetByLogin(string login);
-
-        User? GetById(Guid id);
-
-        User? GetByEmail(string email);
-
-        void Add(User user);
-    }
-
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _db;
@@ -24,29 +14,27 @@ namespace DataLayer.Repositories
             _db = db;
         }
 
-        public void Add(User user)
+        public async Task Add(User user)
         {
-            _db.Users.Add(user);
-            _db.SaveChanges();
+            await _db.Users.AddAsync(user);
+            await _db.SaveChangesAsync();
         }
 
-        public User? GetByEmail(string email)
+        public async Task<User?>? GetByEmail(string email)
         {
-            var user = _db.Users.FirstOrDefault(u => u.Email == email);
-            return user;
+            return await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-        public User? GetById(Guid id)
+        public async Task<User?>? GetById(Guid id)
         {
-            return _db.Users
-                .Include(u => u.RefreshTokens)
-                .FirstOrDefault(u => u.UserId == id);
+            return await _db.Users.Include(u => u.RefreshTokens).FirstOrDefaultAsync(u => u.UserId == id);
         }
 
-        public User? GetByLogin(string login)
+        public async Task<User?>? GetByLogin(string login)
         {
-            return _db.Users.FirstOrDefault(u => u.Login == login);
+            return await _db.Users.FirstOrDefaultAsync(u => u.Login == login);
         }
+
     }
 
 }

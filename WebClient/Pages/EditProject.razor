@@ -1,0 +1,61 @@
+﻿@page "/editproject/{id:int?}"
+@inject IProjectService ProjectService
+
+<h3>EditProject</h3>
+@if(projectModel != null)
+{
+    <EditForm Model="projectModel" OnValidSubmit=Submit>
+        <InputText @bind-Value=@projectModel.Title></InputText>
+        <InputTextArea @bind-Value=@projectModel.Description></InputTextArea>
+        <img src="data:image/jpeg;base64, @imageUri" />
+        <InputFile OnChange="Loading">Change image</InputFile>
+        <button type="submit">
+            Save
+        </button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    DataLayer.Entities.Project? projectModel;
+    string? imageUri;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        projectModel = await ProjectService.Get(Id);
+
+        imageUri = projectModel.ImageBase64;
+    }
+
+    private async Task Loading(InputFileChangeEventArgs e)
+    {
+        var image = await e.File.RequestImageFileAsync("image/png", 300, 300);
+
+        var buffer = new byte[image.Size];
+
+        await image.OpenReadStream(1024 * 1024 * 5).ReadAsync(buffer);
+
+        imageUri = Convert.ToBase64String(buffer);
+
+        StateHasChanged();
+    }
+
+    private async Task Submit()
+    {
+        DataLayer.Entities.Project project = projectModel!;
+
+        project.ImageBase64 = imageUri;
+
+        var result = await Js.InvokeAsync<bool>("confirm", "Save edited project?");
+
+        if (result) 
+        {
+            await ProjectService.Edit(projectModel.Id, project);
+
+            NavManager.NavigateTo("projects");
+        }
+        else projectModel = await ProjectService.Get(Id);
+    }
+}

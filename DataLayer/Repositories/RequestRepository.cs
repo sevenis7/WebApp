@@ -1,24 +1,10 @@
 ﻿using DataLayer.Context;
 using DataLayer.Entities;
+using DataLayer.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Repositories
 {
-    public interface IRequestRepository
-    {
-        void Add(Request request);
-
-        void Update(Request request);
-
-        Request? GetById(int id);
-
-        IQueryable<Request> GetWithStatus(RequestStatus status);
-
-        IQueryable<Request> GetAll();
-
-        IQueryable<Request> GetByTime(DateTime from, DateTime to);
-    }
-
     public class RequestRepository : IRequestRepository
     {
         private readonly AppDbContext _db;
@@ -28,36 +14,26 @@ namespace DataLayer.Repositories
             _db = db;
         }
 
-        public void Add(Request request)
+        public async Task Add(Request request)
         {
-            _db.Requests.Add(request);
-            _db.SaveChanges();
+            await _db.Requests.AddAsync(request);
+            await _db.SaveChangesAsync();
         }
 
-        public IQueryable<Request> GetAll()
+        public async Task<IEnumerable<Request>> GetAll()
         {
-            return _db.Requests.Include(r => r.User);
+            return await _db.Requests.Include(r => r.User).ToListAsync();
         }
 
-        public Request? GetById(int id)
+        public async Task<Request?>? GetById(int id)
         {
-            return _db.Requests.FirstOrDefault(r => r.RequestId == id);
+            return await _db.Requests.Include(r => r.User).FirstOrDefaultAsync(r => r.RequestId == id);
         }
 
-        public IQueryable<Request> GetByTime(DateTime from, DateTime to)
-        {
-            return _db.Requests.Where(r => r.DateTime >= from && r.DateTime <= to);
-        }
-
-        public IQueryable<Request> GetWithStatus(RequestStatus status)
-        {
-            return _db.Requests.Where(r => r.Status == status);
-        }
-
-        public void Update(Request request)
+        public async Task Update(Request request)
         {
             _db.Requests.Update(request);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
     }
 }

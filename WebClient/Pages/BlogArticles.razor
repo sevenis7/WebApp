@@ -1,0 +1,43 @@
+﻿@page "/blog-articles"
+@inject IBlogArticleService BlogArticleService
+
+<h3>BlogArticles</h3>
+
+@if (ListArticles.Count() > 0)
+{
+    <a href="/new-blog-article">Create new post</a>
+    <ul>
+        @foreach(var articleItem in ListArticles)
+        {
+            <li>
+                <article>
+                    <p>@articleItem.PublicationDate</p>
+                    <img src="data:image/jpeg;base64, @articleItem.ImageBase64"/>
+                    <h3>@articleItem.Title</h3>
+                    <p>@articleItem.Text</p>
+                </article>
+                <button class="btn btn-success" @onclick="()=>Delete(articleItem.Id)">Remove</button>
+                <a href="/editblog-article/@articleItem.Id">Edit project</a>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+
+    IEnumerable<DataLayer.Entities.BlogArticle> ListArticles { get; set; } = Enumerable.Empty<BlogArticle>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListArticles = await BlogArticleService.All();
+    }
+
+    private async void Delete(int id)
+    {
+        await BlogArticleService.Delete(id);
+
+        ListArticles = await BlogArticleService.All();
+
+        StateHasChanged();
+    }
+}

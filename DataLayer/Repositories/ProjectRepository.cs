@@ -1,10 +1,11 @@
 ﻿using DataLayer.Context;
 using DataLayer.Entities;
-using DataLayer.Interface;
+using DataLayer.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Repositories
 {
-    public class ProjectRepository : IBaseRepository<Project>
+    public class ProjectRepository : IProjectRepository
     {
         private readonly AppDbContext _db;
 
@@ -13,33 +14,32 @@ namespace DataLayer.Repositories
             _db = db;
         }
 
-        public Project? Get(int id)
+        public async Task Add(Project project)
         {
-            return _db.Projects.FirstOrDefault(p => p.Id == id);
+            await _db.Projects.AddAsync(project);
+            await _db.SaveChangesAsync();
         }
 
-        public IQueryable<Project> GetAll()
+        public async Task<Project?>? Get(int id)
         {
-            return _db.Projects;
+            return await _db.Projects.FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public void Update(Project project)
-        {
-            _db.Projects.Update(project);
-            _db.SaveChanges();
-        }
-
-        public void Remove(Project project)
+        public async Task Delete(Project project)
         {
             _db.Projects.Remove(project);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
-        public Project Add(Project project)
+        public async Task Update(Project project)
         {
-            _db.Projects.Add(project);
-            _db.SaveChanges();
-            return project;
+            _db.Projects.Update(project);
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Project>?>? GetAll()
+        {
+            return await _db.Projects.ToListAsync();
         }
     }
 }

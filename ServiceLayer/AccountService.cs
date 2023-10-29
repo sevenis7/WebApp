@@ -1,5 +1,6 @@
 ﻿using DataLayer.Entities;
-using DataLayer.Repositories;
+using DataLayer.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using ServiceLayer.Interfaces;
 using ServiceLayer.PasswordHashers;
 using ServiceLayer.ViewModels;
@@ -22,10 +23,10 @@ namespace ServiceLayer
             _refreshTokenRepository = refreshTokenRepository;
         }
 
-        public User Register(UserRegisterViewModel model)
+        public async Task<User?> Register(UserRegisterViewModel model)
         {
-            var existingUserByEmail = _userRepository.GetByEmail(model.Email);
-            var exisringUserByLogin = _userRepository.GetByLogin(model.Login);
+            var existingUserByEmail = await _userRepository.GetByEmail(model.Email!);
+            var exisringUserByLogin = await _userRepository.GetByLogin(model.Login!);
 
             if (existingUserByEmail != null || exisringUserByLogin != null)
             {
@@ -42,21 +43,21 @@ namespace ServiceLayer
                 Role = Role.User,
             };
 
-            _userRepository.Add(user);
+            await _userRepository.Add(user);
 
             return user;
         }
 
-        public User Login(UserLoginViewModel model)
+        public async Task<User?> Login(UserLoginViewModel model)
         {
-            var existingUserByLogin = _userRepository.GetByLogin(model.Login);
+            var existingUserByLogin = await _userRepository.GetByLogin(model.Login!);
 
             if (existingUserByLogin == null)
             {
                 return null;
             }
 
-            if (!_passwordHasher.VerifyPassword(model.Password, existingUserByLogin.PasswordHash))
+            if (!_passwordHasher.VerifyPassword(model.Password!, existingUserByLogin.PasswordHash))
             {
                 return null;
             }
@@ -64,25 +65,25 @@ namespace ServiceLayer
             return existingUserByLogin;
         }
 
-        public RefreshToken CreateRefreshToken(RefreshToken token)
+        public async Task<RefreshToken> CreateRefreshToken(RefreshToken token)
         {
             token.Id = Guid.NewGuid();
-            _refreshTokenRepository.Add(token);
+
+            await _refreshTokenRepository.Add(token);
+
             return token;
         }
 
-        public User GetUserByToken(string rawToken, out RefreshToken refreshToken)
+        public async Task<User?> GetUserByToken(string rawToken)
         {
-            var token = _refreshTokenRepository.GetByToken(rawToken);
-
-            refreshToken = token;
+            var token = await _refreshTokenRepository.GetByToken(rawToken);
 
             if (token == null)
             {
                 return null;
             }
 
-            var existingUserById = _userRepository.GetById(token.User.UserId);
+            var existingUserById = await _userRepository.GetById(token.User.UserId);
 
             if (existingUserById == null)
             {
@@ -92,30 +93,35 @@ namespace ServiceLayer
             return existingUserById;
         }
 
-        public void DeleteTokenById(Guid? id)
+        public async Task DeleteTokenById(Guid id)
         {
-            var existingTokenById = _refreshTokenRepository.GetById(id);
+            var existingTokenById = await _refreshTokenRepository.GetById(id);
 
             if (existingTokenById == null)
             {
                 return;
             }
 
-            _refreshTokenRepository.Delete(existingTokenById);
+            await _refreshTokenRepository.Delete(existingTokenById);
         }
 
-        public void DeleteTokenByToken(string refreshToken)
+        public async Task DeleteToken(string token)
         {
-            throw new NotImplementedException();
+            var existingToken = await _refreshTokenRepository.GetByToken(token);
+
+            if (existingToken == null) return;
+
+            await _refreshTokenRepository.Delete(existingToken);
         }
 
-        public bool Logout(Guid id)
+        public async Task<bool> Logout(Guid id)
         {
-            var existingUserById = _userRepository.GetById(id);
+            var existingUserById = await _userRepository.GetById(id);
 
             if (existingUserById == null) return false;
 
-            foreach (var e in existingUserById.RefreshTokens) _refreshTokenRepository.Delete(e);
+            foreach (var e in existingUserById.RefreshTokens!) await _refreshTokenRepository.Delete(e);
+
             return true;
         }
 

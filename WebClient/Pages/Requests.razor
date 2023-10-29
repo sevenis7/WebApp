@@ -1,44 +1,142 @@
 ﻿@page "/requests"
-@inject HttpClient client
-@using System.Drawing;
+@inject IRequestService RequestService
 
 <h3>Requests</h3>
 
-<img src = "data:image/jpg;base64,@imgstring"/>
-
-@if(requests.Count() < 1)
+@if (ListRequests.Count() > 0)
 {
-    <span> Loading </span>
-}
-else
-{
-    
-    <ul>
-        @foreach (var req in requests)
+    <InputDate 
+        @oninput="@((ChangeEventArgs e) => CalendarClick(Convert.ToDateTime(e.Value.ToString() == "" ? DateTime.MinValue.ToString() : e.Value.ToString()), to))" 
+        @bind-Value=from>
+    </InputDate>
+    <InputDate 
+        @oninput="@((ChangeEventArgs e) => CalendarClick(from, Convert.ToDateTime(e.Value.ToString() == "" ? DateTime.MaxValue.ToString() : e.Value.ToString())))" 
+        @bind-Value=to>
+    </InputDate>
+    <div>
+        @foreach(RequestStatus category in Enum.GetValues(typeof(RequestStatus)))
         {
-            <li>
-
-            </li>
+            <button @onclick="()=>StatusBtn(category)">@category</button>
         }
-    </ul>
+    </div>
+    @if (ModelList.Count() > 0)
+    {
+        <p>@requestQtyCategory@relativeRequestQtyCategory requests @category | @requestsQty@relativeRequestsQty requests @category in selected period</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Username
+                    </th>
+                    <th>
+                        Text
+                    </th>
+                    <th>
+                        Status
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var request in ModelList)
+                {
+                    <tr>
+                        <td>
+                            @request.Date.ToShortDateString()
+                        </td>
+                        <td>
+                            <a>@request.Username</a>
+                        </td>
+                        <td>
+                            @request.Text
+                        </td>
+                        <td>
+                            <a>@request.Status</a>
+                        </td>
+                        <a class="btn btn-success" href="/requests/@request.RequestId">About</a>
+                    </tr>
+                    <br>
+                }
+            </tbody>
+        </table>
+    }
+    
 }
-
-
-
-
+<h2>@errorMessage</h2>
 
 @code {
-    IEnumerable<Project> requests = new List<Project>();
+    RequestStatus mode;
 
-    string imgstring;
+    string? category = null;
+    int requestsQty;
+    string relativeRequestsQty = "";
+
+    int requestQtyCategory;
+    string relativeRequestQtyCategory = "";
+
+    string? errorMessage;
+
+    DateTime? from = null;
+    DateTime? to = null;
+
+    IEnumerable<RequestDto?> ListRequests { get; set; } = Enumerable.Empty<RequestDto>();
+    IEnumerable<RequestDto?> ModelList { get; set; } = Enumerable.Empty<RequestDto>();
+    IEnumerable<RequestDto?> SelectedCategoryList { get; set; } = Enumerable.Empty<RequestDto>();
+
+    event Action<IEnumerable<RequestDto?>, string>? RefreshList;
+    event Action<DateTime?, DateTime?>? IntervalChanged;
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await client.GetFromJsonAsync<IEnumerable<Project>>("api/project");
+        ListRequests = (await RequestService.All()).MapRequestToDto();
 
-        imgstring = result.FirstOrDefault().Image;
+        if (ListRequests.Count() == 0)
+            errorMessage = "There is no any requests";
 
-        if (result != null)
-            requests = result;
+        RefreshList += (requests, requestCategory) =>
+        {
+            ModelList = requests;
+
+            requestsQty = ModelList.Count();
+            relativeRequestsQty = $"({(double)(requestsQty) / (double)(ListRequests.Count()):p0})";
+
+            category = requestCategory;
+
+            requestQtyCategory = SelectedCategoryList.Count();
+            relativeRequestQtyCategory = $"({(double)(requestQtyCategory) / (double)(ListRequests.Count()):p0})";
+
+            StateHasChanged();
+        };
+
+        IntervalChanged += (timeFrom, timeTo) =>
+        {
+            from = timeFrom;
+            to = timeTo;
+
+            if (SelectedCategoryList.Any())
+                StatusBtn(mode!);
+        };
+    }
+
+    private void StatusBtn(RequestStatus status)
+    {
+        var timeFrom = from ?? DateTime.MinValue;
+        var timeto = to ?? DateTime.MaxValue;
+
+        mode = status;
+
+        SelectedCategoryList = ListRequests.Where(r => r.Status == status.ToString());
+
+        RefreshList?.Invoke(ListRequests.Where(r => r.Status == status.ToString())
+                                        .Where(r => r.Date >= timeFrom && r.Date <= timeto)
+                                        , status.ToString());
+    }
+
+    private void CalendarClick(DateTime? timeFrom , DateTime? timeTo)
+    {
+        IntervalChanged?.Invoke(timeFrom, timeTo);
     }
 }
+

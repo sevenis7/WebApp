@@ -1,15 +1,16 @@
-﻿using DataLayer.Entities;
-using DataLayer.Repositories;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using ServiceLayer.DTO;
+using DataLayer.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ServiceLayer.Interfaces;
 using System.Security.Claims;
 using WebAppApi.Requests;
+using ServiceLayer.Requests;
+using ServiceLayer.RequestServices;
 
 namespace WebAppApi.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
     public class RequestController : ControllerBase
@@ -21,61 +22,54 @@ namespace WebAppApi.Controllers
             _requestService = requestService;
         }
 
-
         //[Authorize(Roles = nameof(Role.Admin))]
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Request>>> GetAll()
+        [HttpGet()]
+        public async Task<ActionResult<IEnumerable<Request>>> All()
         {
-            var res = _requestService.All();
-
-            return Ok(res);
+            return Ok(await _requestService.All());
         }
 
-        [Authorize(Roles = nameof(Role.User))]
-        [HttpPost("post")]
-        public IActionResult Post([FromBody] PostRequest request)
+        //[Authorize(Roles = nameof(Role.User))]
+        [HttpPost()]
+        public async Task<ActionResult<Request>> Post([FromBody] PostRequest request)
         {
             var rawUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (!Guid.TryParse(rawUserId, out Guid userId)) return BadRequest();
+            if (!Guid.TryParse(rawUserId, out Guid userId)) return Unauthorized();
 
             var requestDto = new Request
             {
-                Text = request.Text,
+                Text = request.Text!,
             };
 
-            _requestService.Post(requestDto, userId);
+            var response = await _requestService.Post(requestDto, userId);
 
-            return Ok();
+            if (response == null) return BadRequest();
+
+            return Ok(response);
         }
 
-        [Authorize(Roles = nameof(Role.Admin))]
+        //[Authorize(Roles = nameof(Role.Admin))]
         [HttpPut("{id}")]
-        public IActionResult ChangeRequestStatus(int id, [FromBody] StatusRequest request)
+        public async Task<ActionResult<Request>> Put(int id, [FromBody] Request request)
         {
-            var status = Enum.Parse<RequestStatus>(request.Status);
+            var response = await _requestService.Edit(id, request);
 
-            var response = _requestService.ChangeStatus(id, status);
-
+            if (response == null) return BadRequest();
+                
             return Ok(response);
         }
 
-        [Authorize(Roles = nameof(Role.Admin))]
-        [HttpGet("{requestStatus}")]
-        public IActionResult GetCategoryRequest(RequestStatus requestStatus)
+        //[Authorize(Roles = nameof(Role.Admin))]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Request>> Get(int id)
         {
-            var response = _requestService.GetByStatus(requestStatus);
+            var response = await _requestService.Get(id);
 
-            return Ok(response);
-        }
-
-        [Authorize(Roles = nameof(Role.Admin))]
-        [HttpGet("interval")]
-        public IActionResult GetByTime([FromQuery] IntervalRequest interval)
-        {
-            var response = _requestService.GetByTime(interval.From, interval.To);
+            if (response == null) return BadRequest();
 
             return Ok(response);
         }
     }
+
 }

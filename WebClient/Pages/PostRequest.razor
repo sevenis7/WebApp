@@ -1,0 +1,49 @@
+﻿@inject IRequestService RequestService
+@inject IAccountService AccountService
+
+<h3>PostRequest</h3>
+
+@if (isLoggedIn)
+{
+    <EditForm Model="Request" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <label for="text">Enter your message</label>
+        <InputText id="text" @bind-Value="Request.Text"></InputText>
+        <button type="submit">Send</button>
+    </EditForm>
+}
+
+@code {
+    string? userName;
+
+    bool isLoggedIn => userName is not null;
+
+    public ServiceLayer.Requests.PostRequest Request { get; set; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var jwt = await AccountService.GetJwt();
+
+        if (string.IsNullOrEmpty(jwt)) userName = null;
+        else userName = new JwtSecurityToken(jwt).Claims.First(c => c.Type == ClaimTypes.Name).Value;
+
+        AccountService.LoginChange += name =>
+        {
+            userName = name;
+
+            StateHasChanged();
+        };
+    }
+
+    public async Task Submit()
+    {
+        var task = RequestService.Post(Request);
+
+        Request.Text = string.Empty;
+
+        await task;
+    }
+}

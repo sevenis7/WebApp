@@ -1,7 +1,7 @@
 ﻿using DataLayer.Entities;
 using ServiceLayer.Interfaces;
-using WebAppApi.Responses;
 using WebAppApi.TokenGenerators;
+using ServiceLayer.Responses;
 
 namespace WebAppApi.Authenticators
 {
@@ -10,7 +10,6 @@ namespace WebAppApi.Authenticators
         private readonly AccessTokenGenerator _accessTokenGenerator;
         private readonly RefreshTokenGenerator _refreshTokenGenerator;
         private readonly IAccountService _accountService;
-
 
         public Authenticator(AccessTokenGenerator accessTokenGenerator,
             RefreshTokenGenerator refreshTokenGenerator,
@@ -21,7 +20,7 @@ namespace WebAppApi.Authenticators
             _accountService = accountService;
         }
 
-        public AuthenticatedResponse Authenticate(User user)
+        public async Task<AuthenticatedResponse> Authenticate(User user)
         {
             string accessToken = _accessTokenGenerator.GenerateToken(user);
             string refreshToken = _refreshTokenGenerator.GenerateToken();
@@ -32,15 +31,13 @@ namespace WebAppApi.Authenticators
                 User = user,
             };
 
-            _accountService.CreateRefreshToken(refreshTokenDto);
+            await _accountService.CreateRefreshToken(refreshTokenDto);
 
-            AuthenticatedResponse response = new AuthenticatedResponse
+            return  new AuthenticatedResponse
             {
                 AccessToken = accessToken,
                 RefreshToken = refreshToken
             };
-
-            return response;
         }
 
     }

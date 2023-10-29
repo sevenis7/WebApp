@@ -1,0 +1,24 @@
+﻿@page "/projects/{id:int}"
+@inject IProjectService ProjectService
+
+<h3>Project</h3>
+
+@if(projectModel != null)
+{
+    <h3>@projectModel.Title</h3>
+    <h3>@projectModel.Description</h3>
+
+    <img src="data:image/jpeg;base64, @projectModel.ImageBase64" />
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    DataLayer.Entities.Project? projectModel;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        projectModel = await ProjectService.Get(Id);
+    }
+}

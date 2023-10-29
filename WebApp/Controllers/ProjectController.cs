@@ -1,52 +1,64 @@
 ﻿using DataLayer.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ServiceLayer.Interfaces;
 
 namespace WebAppApi.Controllers
 {
-    [Authorize(Roles = nameof(Role.Admin))]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectController : ControllerBase
     {
-        private readonly IBaseService<Project> _projectService;
+        private readonly IProjectService _projectService;
 
-        public ProjectController(IBaseService<Project> projectService)
+        public ProjectController(IProjectService projectService)
         {
             _projectService = projectService;
         }
 
-        [AllowAnonymous]
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<ActionResult<IEnumerable<Project>>> All()
         {
-            var res = _projectService.GetAll();
-
-            return Ok(res);
+            return Ok(await _projectService.All());
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Project>> Get(int id)
         {
-            var res = _projectService.Delete(id);
+            var project = await _projectService.Get(id);
 
-            return Ok(res);
+            if (project == null) return BadRequest();
+
+            return Ok(project);
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] Project project)
+        public async Task<ActionResult<Project>> Post([FromBody] Project project)
         {
-            _projectService.Create(project);
-            return Ok();
+            var response = await _projectService.Post(project);
+
+            if (response == null) return BadRequest();
+
+            return Ok(response);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Edit(int id, [FromBody] Project project)
+        public async Task<ActionResult<Project>> Put(int id, [FromBody] Project project)
         {
-            var res = _projectService.Edit(id, project);
+            var response = await _projectService.Edit(id, project);
 
-            return Ok(res);
+            if (response == null) return BadRequest();
+
+            return Ok(response);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Project>> Delete(int id)
+        {
+            var response = await _projectService.Delete(id);
+
+            if (response == null) return BadRequest();
+
+            return Ok(response);
         }
     }
 }

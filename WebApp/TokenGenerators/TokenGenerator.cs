@@ -12,7 +12,7 @@ namespace WebAppApi.TokenGenerators
             string secretKey,
             string issuer,
             string audience,
-        double expirationMinutes,
+            double expirationMinutes,
             IEnumerable<Claim> claims = null)
         {
             SymmetricSecurityKey signInKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));

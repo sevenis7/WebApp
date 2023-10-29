@@ -1,0 +1,43 @@
+﻿@page "/projects"
+@inject IProjectService ProjectService
+
+<h3>Projects</h3>
+
+
+@if (ListProjects.Count() > 0)
+{
+    <a href="/new-project">Create new project</a>
+    <ul>
+        @foreach (var projectItem in ListProjects)
+        {
+            <li>
+                <a href="/projects/@projectItem.Id">
+                    <article>
+                        <img src="data:image/jpeg;base64, @projectItem.ImageBase64" />
+                        <p>@projectItem.Title</p>
+                    </article>
+                </a>
+                <button class="btn btn-success" @onclick="()=>Delete(projectItem.Id)">Remove</button>
+                <a href="/editproject/@projectItem.Id">Edit project</a>
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    IEnumerable<DataLayer.Entities.Project> ListProjects { get; set; } = Enumerable.Empty<DataLayer.Entities.Project>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListProjects = await ProjectService.All();
+    }
+
+    private async void Delete(int id)
+    {
+        await ProjectService.Delete(id);
+
+        ListProjects = await ProjectService.All();
+
+        StateHasChanged();
+    }
+}

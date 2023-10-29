@@ -1,0 +1,42 @@
+﻿@inject IAccountService AccountService
+
+<h3>User</h3>
+
+@if (isLoggedIn)
+{
+    <p>Welcome @userName <a @onclick="Logout" href="/">Logout</a> </p>
+}
+else
+{
+    <a href="/Login">Login</a>
+    <a href="/Register">Register</a>
+}
+
+@code {
+
+    string? userName = "";
+
+    bool isLoggedIn => userName is not null;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var jwt = await AccountService.GetJwt();
+
+        if (string.IsNullOrEmpty(jwt)) userName = null;
+        else userName = new JwtSecurityToken(jwt).Claims.First(c => c.Type == ClaimTypes.Name).Value;
+
+        AccountService.LoginChange += name =>
+        {
+            userName = name;
+
+            StateHasChanged();
+        };
+    }
+
+    private async Task Logout()
+    {
+        await AccountService.Logout();
+    }
+}

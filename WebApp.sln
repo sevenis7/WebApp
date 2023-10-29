@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataLayer", "DataLayer\Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceLayer", "ServiceLayer\ServiceLayer.csproj", "{22EE018E-2D7C-4950-85F4-08D050F3E701}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebClient", "WebClient\WebClient.csproj", "{8EB4F6BB-D9A6-4E16-B422-976147104D56}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebClient", "WebClient\WebClient.csproj", "{9ABA9DBE-A2CC-4A39-BEB6-E02408FF9AAB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FA5C5217-1612-4392-A627-FF87DD9A50E3}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +34,10 @@ Global
 		{22EE018E-2D7C-4950-85F4-08D050F3E701}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22EE018E-2D7C-4950-85F4-08D050F3E701}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22EE018E-2D7C-4950-85F4-08D050F3E701}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8EB4F6BB-D9A6-4E16-B422-976147104D56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EB4F6BB-D9A6-4E16-B422-976147104D56}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8EB4F6BB-D9A6-4E16-B422-976147104D56}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8EB4F6BB-D9A6-4E16-B422-976147104D56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9ABA9DBE-A2CC-4A39-BEB6-E02408FF9AAB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9ABA9DBE-A2CC-4A39-BEB6-E02408FF9AAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9ABA9DBE-A2CC-4A39-BEB6-E02408FF9AAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9ABA9DBE-A2CC-4A39-BEB6-E02408FF9AAB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

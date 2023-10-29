@@ -1,0 +1,47 @@
+﻿@page "/new-blog-article"
+@inject IBlogArticleService BlogArticleService
+
+<h3>NewBlogArticle</h3>
+
+<EditForm Model="articleModel" OnValidSubmit=Submit>
+    <DataAnnotationsValidator />
+    <InputText @bind-Value=@articleModel.Title></InputText>
+    <InputText @bind-Value=@articleModel.Description></InputText>
+    <InputTextArea @bind-Value=@articleModel.Text></InputTextArea>
+    <InputText @bind-Value=@articleModel.ImageBase64></InputText>
+    <img src="data:image/jpeg;base64, @articleModel.ImageBase64" />
+    <InputFile OnChange="Loading">Select image</InputFile>
+    <ValidationMessage For="@(()=>articleModel.ImageBase64)"></ValidationMessage>
+    <button type="submit">
+        Create
+    </button>
+</EditForm>
+
+@code {
+    BlogArticle? articleModel = new();
+
+    private async Task Loading(InputFileChangeEventArgs e)
+    {
+        var image = await e.File.RequestImageFileAsync("image/png", 300, 300);
+
+        var buffer = new byte[image.Size];
+
+        await image.OpenReadStream(1024 * 1024 * 5).ReadAsync(buffer);
+
+        articleModel.ImageBase64 = Convert.ToBase64String(buffer);
+
+        StateHasChanged();
+    }
+
+    private async Task Submit()
+    {
+        var result = await Js.InvokeAsync<bool>("confirm", "Create new blog post?");
+
+        if (result)
+        {
+            await BlogArticleService.Post(articleModel!);
+
+            NavManager.NavigateTo("projects");
+        }
+    }
+}

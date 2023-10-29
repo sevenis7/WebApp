@@ -4,7 +4,7 @@ namespace DataLayer.Entities
 {
     public enum RequestStatus
     {
-        Receieved = 0,
+        Received = 0,
         InWork,
         Completed,
         Rejected,
@@ -19,7 +19,7 @@ namespace DataLayer.Entities
 
         public RequestStatus Status { get; set; }
 
-        public DateTime DateTime { get; set; }
+        public DateTime Date { get; set; }
 
         //references
 

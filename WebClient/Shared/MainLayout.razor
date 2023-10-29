@@ -1,17 +1,52 @@
 ﻿@inherits LayoutComponentBase
+@inject IAccountService AccountService
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<User/>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
+@if (isLoggedIn)
+{
+    <nav>   
+        <NavLink href="/">Main</NavLink>
+        <NavLink href="/requests">Requests</NavLink>
+        <NavLink href="/projects">Projects</NavLink>
+        <NavLink href="/blog-articles">Blog</NavLink>
+    </nav>
+}
 
-        <article class="content px-4">
+<main>
+    @Body
+    @*<ErrorBoundary @ref= "errorBoundary">
+        <ChildContent>
             @Body
-        </article>
-    </main>
-</div>
+        </ChildContent>
+        <ErrorContent>
+            <div class="alert alert-danger">
+                <h3>@context.Message</h3>
+            </div>
+        </ErrorContent>
+    </ErrorBoundary>*@
+</main>
+
+@code {
+    string? userName = "";
+    private ErrorBoundary? errorBoundary;
+
+    bool isLoggedIn => userName is not null;
+
+    protected async override Task OnInitializedAsync()
+    {
+        errorBoundary = new();
+
+        var jwt = await AccountService.GetJwt();
+
+        if (string.IsNullOrEmpty(jwt)) userName = null;
+        else userName = new JwtSecurityToken(jwt).Claims.First(c => c.Type == ClaimTypes.Name).Value;
+
+        AccountService.LoginChange += name =>
+        {
+            userName = name;
+
+            StateHasChanged();
+        };
+    }
+}

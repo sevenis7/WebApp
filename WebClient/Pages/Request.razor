@@ -1,0 +1,58 @@
+﻿@page "/requests/{id:int}"
+@inject IRequestService RequestService
+
+<h3>Request</h3>
+
+@if (requestParameter != null)
+{
+    <span>requestModel.Text:</span>
+    <span>@requestModel.Text</span>
+    <br>
+    <span>requestModel.Username:</span>
+    <span>@requestModel.Username</span>
+    <br>
+    <span>requestModel.Status:</span>
+    <span>@requestModel.Status</span>
+    <br>
+    <span>requestModel.Date:</span>
+    <span>@requestModel.Date.ToShortDateString()</span>
+
+    <EditForm Model="requestParameter" OnValidSubmit="Submit">
+        <label for="status"/>
+        <InputSelect @bind-Value="requestParameter.Status" id="status">
+            @foreach(var category in Enum.GetValues(typeof(RequestStatus)))
+            {
+                <option value="@category">@category</option>
+            }
+        </InputSelect>
+        <button type="submit">Submit</button>
+    </EditForm>
+}
+
+@errorMessage
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    DataLayer.Entities.Request? requestParameter = new DataLayer.Entities.Request();
+    ServiceLayer.DTO.RequestDto? requestModel = new RequestDto();
+    string? errorMessage;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        requestParameter = await RequestService.Get(Id);
+
+        if (requestParameter == null)
+            errorMessage = RequestService.Error;
+
+        requestModel = requestParameter.MapRequestToDto();
+    }
+
+    public async Task Submit()
+    {
+        await RequestService.Put(requestModel.RequestId, requestParameter!);
+
+        NavManager.NavigateTo("/requests");
+    } 
+}

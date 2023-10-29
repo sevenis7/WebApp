@@ -10,9 +10,7 @@ using WebAppApi.TokenGenerators;
 using WebAppApi.TokenValidators;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Text.Json.Serialization;
-using DataLayer.Entities;
-using DataLayer.Interface;
+using DataLayer.Interfaces;
 
 namespace WebAppApi
 {
@@ -22,7 +20,8 @@ namespace WebAppApi
         {
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddCors();
-            string connection = builder.Configuration.GetConnectionString("DefaultConnection");
+            string connection = builder.Configuration.GetConnectionString("DefaultConnection")!;
+            var x = builder.Configuration["ServerUrl"];
             builder.Services.Configure<AuthenticationConfiguration>(builder.Configuration.GetSection("Authentication"));
             builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connection));
             builder.Services.AddTransient<IUserRepository, UserRepository>();
@@ -30,22 +29,18 @@ namespace WebAppApi
             builder.Services.AddTransient<IRefreshTokenRepository, RefreshTokenRepository>();
             builder.Services.AddTransient<IRequestRepository, RequestRepository>();
             builder.Services.AddTransient<IRequestService, RequestService>();
-            builder.Services.AddTransient<IBaseRepository<Project>, ProjectRepository>();
-            builder.Services.AddTransient<IBaseService<Project>, ProjectService>();
-            builder.Services.AddTransient<IBaseRepository<Service>,  ServiceRepository>();
-            builder.Services.AddTransient<IBaseService<Service>,  ServiceSerivce>();
-            builder.Services.AddTransient<IBaseRepository<Article>, ArticleRepository>();
-            builder.Services.AddTransient<IBaseService<Article>, ArticleService>();
-            builder.Services.AddTransient<IBaseRepository<ContactLink>, ContactLinkRepository>();
-            builder.Services.AddTransient<IBaseService<ContactLink>, ContactLinkService>();
-            builder.Services.AddTransient<IContent, Content>();
-            builder.Services.AddTransient<IContentService, ContentService>();
             builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
             builder.Services.AddSingleton<AccessTokenGenerator>();
             builder.Services.AddSingleton<RefreshTokenGenerator>();
             builder.Services.AddSingleton<TokenGenerator>();
             builder.Services.AddSingleton<RefreshTokenValidator>();
             builder.Services.AddTransient<Authenticator>();
+
+            builder.Services.AddTransient<IProjectRepository, ProjectRepository>();
+            builder.Services.AddTransient<IProjectService, ProjectService>();
+
+            builder.Services.AddTransient<IBlogArticleRepository, BlogArticleRepository>();
+            builder.Services.AddTransient<IBlogArticleService, BlogArticleService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(o =>
@@ -55,7 +50,7 @@ namespace WebAppApi
                     {
                         ValidIssuer = builder.Configuration["Authentication:Issuer"],
                         ValidAudience = builder.Configuration["Authentication:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:AccessTokenSecret"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:AccessTokenSecret"]!)),
                         ValidateAudience = true,
                         ValidateIssuer = true,
                         ValidateIssuerSigningKey = true,
@@ -64,7 +59,8 @@ namespace WebAppApi
                     };
                 });
 
-            builder.Services.AddControllers().AddJsonOptions(o => o.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson(o => o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             var app = builder.Build();
 

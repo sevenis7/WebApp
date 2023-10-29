@@ -1,0 +1,75 @@
+﻿@page "/login"
+@inject IAccountService AccountService
+@inject NavigationManager NavManager
+
+@if (!isLoggedIn)
+{
+    <EditForm Model="loginModel" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div>
+            <label for="login">Login:</label>
+            <InputText @bind-Value="@loginModel.Login" id="login" name="login" />
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <InputText type="password" @bind-Value="@loginModel.Password" id="password" name="password" />
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </EditForm>
+}
+
+@if(errorMessage is not null)
+{
+    <p>@errorMessage</p>
+}
+
+@code {
+
+    UserLoginViewModel loginModel = new UserLoginViewModel();
+    DateTime? expiration;
+    string? errorMessage = "";
+
+    string? userName;
+    bool isLoggedIn => userName is not null;
+
+    private async Task Submit()
+    {
+        try
+        {
+            expiration = await AccountService.Login(loginModel);
+
+            errorMessage = "";
+
+            NavManager.NavigateTo("/");
+
+        }
+        catch (Exception ex)
+        {
+            expiration = null;
+
+            errorMessage = ex.Message;
+        }
+    }
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var jwt = await AccountService.GetJwt();
+
+        if (string.IsNullOrEmpty(jwt)) userName = null;
+        else userName = new JwtSecurityToken(jwt).Claims.First(c => c.Type == ClaimTypes.Name).Value;
+
+        AccountService.LoginChange += name =>
+        {
+            userName = name;
+
+            StateHasChanged();
+        };
+    }
+
+}

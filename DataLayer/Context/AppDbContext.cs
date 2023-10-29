@@ -1,5 +1,7 @@
 ﻿using DataLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DataLayer.Context
 {
@@ -11,15 +13,9 @@ namespace DataLayer.Context
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-        public DbSet<MainContent> MainContent { get; set; }
-
         public DbSet<Project> Projects { get; set; }
 
-        public DbSet<Service> Services { get; set; }
-
-        public DbSet<Article> Articles { get; set; }
-
-        public DbSet<ContactLink> ContactLinks { get; set; }
+        public DbSet<BlogArticle> BlogArticles { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -63,8 +59,8 @@ namespace DataLayer.Context
             {
                 new Request
                 {
-                    Status = RequestStatus.Receieved,
-                    DateTime = DateTime.Now,
+                    Status = RequestStatus.Received,
+                    Date = DateTime.Now,
                     RequestId = 1,
                     Text = "testRecieved",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
@@ -72,7 +68,7 @@ namespace DataLayer.Context
                 new Request
                 {
                     Status = RequestStatus.InWork,
-                    DateTime = DateTime.Now,
+                    Date = DateTime.Now,
                     RequestId = 2,
                     Text = "testInWork",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
@@ -80,7 +76,7 @@ namespace DataLayer.Context
                 new Request
                 {
                     Status = RequestStatus.Completed,
-                    DateTime = DateTime.Now,
+                    Date = DateTime.Now,
                     RequestId = 3,
                     Text = "testCompleted",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
@@ -88,7 +84,7 @@ namespace DataLayer.Context
                 new Request
                 {
                     Status = RequestStatus.Rejected,
-                    DateTime = DateTime.Now,
+                    Date = DateTime.Now,
                     RequestId = 4,
                     Text = "testRejected",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
@@ -96,103 +92,117 @@ namespace DataLayer.Context
                 new Request
                 {
                     Status = RequestStatus.Canceled,
-                    DateTime = DateTime.Now,
+                    Date = DateTime.Now,
                     RequestId = 5,
                     Text = "testCanceled",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
                 },
                 new Request
                 {
-                    Status = RequestStatus.Receieved,
-                    DateTime = new DateTime(2023,9,1),
+                    Status = RequestStatus.Received,
+                    Date = new DateTime(2023,9,1),
                     RequestId = 6,
                     Text = "testReceieved",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
                 },
                 new Request
                 {
-                    Status = RequestStatus.Receieved,
-                    DateTime = new DateTime(2023,9,1),
+                    Status = RequestStatus.Received,
+                    Date = new DateTime(2023,9,1),
                     RequestId = 7,
                     Text = "testReceieved",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
                 },
                 new Request
                 {
-                    Status = RequestStatus.Receieved,
-                    DateTime = new DateTime(2023,8,1),
+                    Status = RequestStatus.Received,
+                    Date = new DateTime(2023,8,1),
                     RequestId = 8,
                     Text = "testReceieved",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
                 },
                 new Request
                 {
-                    Status = RequestStatus.Receieved,
-                    DateTime = new DateTime(2023,8,1),
+                    Status = RequestStatus.Received,
+                    Date = new DateTime(2023,8,1),
                     RequestId = 9,
                     Text = "testReceieved",
                     UserId = users.FirstOrDefault(x => x.Login == "user")!.UserId
                 },
                 new Request
                 {
-                    Status = RequestStatus.Receieved,
-                    DateTime = new DateTime(2023,8,31),
+                    Status = RequestStatus.Received,
+                    Date = new DateTime(2023,8,31),
                     RequestId = 10,
                     Text = "testReceieved",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
                 },
                 new Request
                 {
-                    Status = RequestStatus.Receieved,
-                    DateTime = new DateTime(2023,8,31),
+                    Status = RequestStatus.Received,
+                    Date = new DateTime(2023,8,31),
                     RequestId = 11,
                     Text = "testReceieved",
                     UserId = users.FirstOrDefault(x=>x.Login == "user")!.UserId
                 }
             };
 
-            MainContent mainContent = new MainContent
-            {
-                MainContentId = 1,
-                Title = "Консалтинг без регистрации и смс"
-            };
-
-            List<Project> projects = new List<Project>
+            List<Project> projects = new List<Project>()
             {
                 new Project
                 {
                     Id = 1,
-                    Title = "Оработка кредитных заявок в режиме онлайн",
-                    Image = Convert.ToBase64String(File.ReadAllBytes("C:\\Users\\callm\\Desktop\\m.jpg")),
-                    Description = "Описание проектаОписание проектаОписание проекта"
-                }
+                    Title = "Test",
+                    Description = "Test",
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                },
+                new Project
+                {
+                    Id = 2,
+                    Title = "Test2",
+                    Description = "Test2",
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                },
+                new Project
+                {
+                    Id = 3,
+                    Title = "Test3",
+                    Description = "Test3",
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                },
+                new Project
+                {
+                    Id = 4,
+                    Title = "Test4",
+                    Description = "Test4",
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                },
+                new Project
+                {
+                    Id = 5,
+                    Title = "Test5",
+                    Description = "Test5",
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                },
             };
 
-            List<Article> articles = new List<Article>
+            List<BlogArticle> blogArticles = new()
             {
-                new Article
+                new()
                 {
                     Id = 1,
-                    Title = "ArticleTitle",
-                    Description = "ArticleDescription"
-                }
-            };
-
-            List<ContactLink> links = new List<ContactLink>
-            {
-                new ContactLink
-                {
-                    Id = 1,
-                    Url = "www.google.com"
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("C:\\Users\\callm\\Desktop\\S.jpg")),
+                    PublicationDate = new DateTime(2022,10,10),
+                    Description = "test short tescription",
+                    Title = "test Title",
+                    Text = "blablalablablalablablalablablalablablalablablalablablalablablala"
                 }
             };
 
             modelBuilder.Entity<User>().HasData(users);
             modelBuilder.Entity<Request>().HasData(requests);
-            modelBuilder.Entity<MainContent>().HasData(mainContent);
             modelBuilder.Entity<Project>().HasData(projects);
-            modelBuilder.Entity<Article>().HasData(articles);
-            modelBuilder.Entity<ContactLink>().HasData(links);
+            modelBuilder.Entity<BlogArticle>().HasData(blogArticles);
         }
     }
 }

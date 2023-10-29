@@ -1,56 +1,60 @@
 ﻿using DataLayer.Entities;
-using DataLayer.Interface;
-using DataLayer.Repositories;
+using DataLayer.Interfaces;
 using ServiceLayer.Interfaces;
 
 namespace ServiceLayer
 {
-    public class ProjectService : IBaseService<Project>
+    public class ProjectService : IProjectService
     {
-        private readonly IBaseRepository<Project> _projectRepository;
+        private readonly IProjectRepository _projectRepository;
 
-        public ProjectService(IBaseRepository<Project> projectRepository)
+        public ProjectService(IProjectRepository projectRepository)
         {
             _projectRepository = projectRepository;
         }
 
-        public Project? Create(Project project)
+        public async Task<Project?> Get(int id)
         {
-            _projectRepository.Add(project);
+            return await _projectRepository.Get(id);
+        }
+
+        public async Task<Project?> Post(Project project)
+        {
+            if (project == null) return null;
+
+            await _projectRepository.Add(project);
 
             return project;
         }
 
-        public bool Delete(int id)
-        {
-            var existingProjectById = _projectRepository.Get(id);
+        public async Task<IEnumerable<Project>?> All() => await _projectRepository.GetAll();
 
-            if (existingProjectById != null)
-            {
-                _projectRepository.Remove(existingProjectById);
-                return true;
-            }
-            return false;
+        public async Task<Project?> Edit(int id, Project project)
+        {
+            var projectExistingById = await _projectRepository.Get(id);
+
+            if (projectExistingById == null || project == null) return null;
+
+            //projectExistingById.Title = project.Title;
+            //projectExistingById.Description = project.Description;
+            //projectExistingById.ImageBase64 = project.ImageBase64;
+
+            projectExistingById = project;
+
+            await _projectRepository.Update(projectExistingById);
+
+            return projectExistingById;
         }
 
-        public bool Edit(int id, Project project)
+        public async Task<Project?> Delete(int id)
         {
-            var existingProjectById = _projectRepository.Get(id);
+            var projectExistingById = await Get(id);
 
-            if (existingProjectById == null || project == null) return false;
+            if (projectExistingById == null) return null;
 
-            existingProjectById.Image = project.Image;
-            existingProjectById.Title = project.Title;
-            existingProjectById.Description = project.Description;
+            await _projectRepository.Delete(projectExistingById);
 
-            _projectRepository.Update(existingProjectById);
-
-            return true;
-        }
-
-        public IQueryable<Project>? GetAll()
-        {
-            return _projectRepository.GetAll();
+            return projectExistingById;
         }
     }
 }

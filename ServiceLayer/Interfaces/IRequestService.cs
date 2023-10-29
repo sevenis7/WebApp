@@ -1,18 +1,14 @@
 ﻿using DataLayer.Entities;
-using DataLayer.Repositories;
+using ServiceLayer.DTO;
+using ServiceLayer.RequestServices;
 
 namespace ServiceLayer.Interfaces
 {
     public interface IRequestService
     {
-        Request? Post(Request request, Guid userId);
-
-        Request? ChangeStatus(int id, RequestStatus status);
-
-        IQueryable<Request> GetByStatus(RequestStatus status);
-
-        IQueryable<Request> All();
-
-        IQueryable<Request> GetByTime(DateTime from, DateTime to);
+        Task<IEnumerable<Request?>> All();
+        Task<Request?> Edit(int id, Request request);
+        Task<Request?> Post(Request request, Guid userId);
+        Task<Request?> Get(int id);
     }
 }

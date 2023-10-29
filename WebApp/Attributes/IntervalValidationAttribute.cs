@@ -8,10 +8,7 @@ namespace WebAppApi.Attributes
         public override bool IsValid(object? value)
         {
             if (value is IntervalRequest request)
-            {
                 if (request.From < request.To) return true;
-
-            }
             
             ErrorMessage = "Wrong interval.";
 
