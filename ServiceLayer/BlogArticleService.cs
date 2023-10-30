@@ -4,11 +4,11 @@ using ServiceLayer.Interfaces;
 
 namespace ServiceLayer
 {
-    public class BlogArticleService : IBlogArticleService
+    public class BlogArticleService : IService<BlogArticle>
     {
-        private readonly IBlogArticleRepository _blogArticleRepository;
+        private readonly IRepository<BlogArticle> _blogArticleRepository;
 
-        public BlogArticleService(IBlogArticleRepository blogArticleRepository)
+        public BlogArticleService(IRepository<BlogArticle> blogArticleRepository)
         {
             _blogArticleRepository = blogArticleRepository;
         }
@@ -56,6 +56,6 @@ namespace ServiceLayer
             return articleExistingById;
         }
 
-        public async Task<IEnumerable<BlogArticle>> All() => await _blogArticleRepository.GetAll();
+        public async Task<IEnumerable<BlogArticle>> All() => await _blogArticleRepository.All();
     }
 }

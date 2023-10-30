@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using DataLayer.Entities;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using WebClient.Handlers;
@@ -24,8 +25,9 @@ namespace WebClient
 
             builder.Services.AddSingleton<IAccountService, AccountService>();
             builder.Services.AddTransient<IRequestService, RequestService>();
-            builder.Services.AddTransient<IProjectService, ProjectService>();
-            builder.Services.AddTransient<IBlogArticleService, BlogArticleService>();
+            builder.Services.AddTransient<IService<Project>, ProjectService>();
+            builder.Services.AddTransient<IService<BlogArticle>, BlogArticleService>();
+            builder.Services.AddTransient<IService<Service>, ServiceService>();
 
             builder.Services.AddBlazoredLocalStorageAsSingleton();
 

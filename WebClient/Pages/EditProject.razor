@@ -1,5 +1,5 @@
 ﻿@page "/editproject/{id:int?}"
-@inject IProjectService ProjectService
+@inject IService<DataLayer.Entities.Project> ProjectService
 
 <h3>EditProject</h3>
 @if(projectModel != null)

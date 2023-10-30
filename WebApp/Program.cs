@@ -11,6 +11,7 @@ using WebAppApi.TokenValidators;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DataLayer.Interfaces;
+using DataLayer.Entities;
 
 namespace WebAppApi
 {
@@ -36,11 +37,11 @@ namespace WebAppApi
             builder.Services.AddSingleton<RefreshTokenValidator>();
             builder.Services.AddTransient<Authenticator>();
 
-            builder.Services.AddTransient<IProjectRepository, ProjectRepository>();
-            builder.Services.AddTransient<IProjectService, ProjectService>();
+            builder.Services.AddTransient<IRepository<Project>, ProjectRepository>();
+            builder.Services.AddTransient<IService<Project>, ProjectService>();
 
-            builder.Services.AddTransient<IBlogArticleRepository, BlogArticleRepository>();
-            builder.Services.AddTransient<IBlogArticleService, BlogArticleService>();
+            builder.Services.AddTransient<IRepository<BlogArticle>, BlogArticleRepository>();
+            builder.Services.AddTransient<IService<BlogArticle>, BlogArticleService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(o =>

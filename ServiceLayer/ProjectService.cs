@@ -4,11 +4,11 @@ using ServiceLayer.Interfaces;
 
 namespace ServiceLayer
 {
-    public class ProjectService : IProjectService
+    public class ProjectService : IService<Project>
     {
-        private readonly IProjectRepository _projectRepository;
+        private readonly IRepository<Project> _projectRepository;
 
-        public ProjectService(IProjectRepository projectRepository)
+        public ProjectService(IRepository<Project> projectRepository)
         {
             _projectRepository = projectRepository;
         }
@@ -27,7 +27,7 @@ namespace ServiceLayer
             return project;
         }
 
-        public async Task<IEnumerable<Project>?> All() => await _projectRepository.GetAll();
+        public async Task<IEnumerable<Project>> All() => await _projectRepository.All();
 
         public async Task<Project?> Edit(int id, Project project)
         {
@@ -35,11 +35,9 @@ namespace ServiceLayer
 
             if (projectExistingById == null || project == null) return null;
 
-            //projectExistingById.Title = project.Title;
-            //projectExistingById.Description = project.Description;
-            //projectExistingById.ImageBase64 = project.ImageBase64;
-
-            projectExistingById = project;
+            projectExistingById.Title = project.Title;
+            projectExistingById.Description = project.Description;
+            projectExistingById.ImageBase64 = project.ImageBase64;
 
             await _projectRepository.Update(projectExistingById);
 

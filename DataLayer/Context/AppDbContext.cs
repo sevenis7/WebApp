@@ -17,6 +17,8 @@ namespace DataLayer.Context
 
         public DbSet<BlogArticle> BlogArticles { get; set; }
 
+        public DbSet<Service> Services { get; set; }
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
@@ -199,10 +201,21 @@ namespace DataLayer.Context
                 }
             };
 
+            List<Service> services = new List<Service>
+            {
+                new Service
+                {
+                    Id = 1,
+                    Title = "OUR MAIN SERVICE",
+                    Text = "bla",
+                }
+            };
+
             modelBuilder.Entity<User>().HasData(users);
             modelBuilder.Entity<Request>().HasData(requests);
             modelBuilder.Entity<Project>().HasData(projects);
             modelBuilder.Entity<BlogArticle>().HasData(blogArticles);
+            modelBuilder.Entity<Service>().HasData(services);
         }
     }
 }

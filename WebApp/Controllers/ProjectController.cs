@@ -8,9 +8,9 @@ namespace WebAppApi.Controllers
     [ApiController]
     public class ProjectController : ControllerBase
     {
-        private readonly IProjectService _projectService;
+        private readonly IService<Project> _projectService;
 
-        public ProjectController(IProjectService projectService)
+        public ProjectController(IService<Project> projectService)
         {
             _projectService = projectService;
         }

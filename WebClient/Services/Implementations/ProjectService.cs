@@ -1,11 +1,11 @@
 ﻿using DataLayer.Entities;
 using System.Net.Http.Json;
+using WebClient.Services.Interfaces;
 using HttpClientJsonExtensions = System.Net.Http.Json.HttpClientJsonExtensions;
-using IProjectService = WebClient.Services.Interfaces.IProjectService;
 
 namespace WebClient.Services.Implementations
 {
-    public class ProjectService : IProjectService
+    public class ProjectService : IService<Project>
     {
         private readonly HttpClient _httpClient;
 

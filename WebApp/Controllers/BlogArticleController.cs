@@ -8,9 +8,9 @@ namespace WebAppApi.Controllers
     [ApiController]
     public class BlogArticleController : ControllerBase
     {
-        private readonly IBlogArticleService _blogArticleService;
+        private readonly IService<BlogArticle> _blogArticleService;
 
-        public BlogArticleController(IBlogArticleService blogArticleService)
+        public BlogArticleController(IService<BlogArticle> blogArticleService)
         {
             _blogArticleService = blogArticleService;
         }

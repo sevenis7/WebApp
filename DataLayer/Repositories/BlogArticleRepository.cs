@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Repositories
 {
-    public class BlogArticleRepository : IBlogArticleRepository
+    public class BlogArticleRepository : IRepository<BlogArticle>
     {
         private readonly AppDbContext _db;
 
@@ -37,7 +37,7 @@ namespace DataLayer.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<BlogArticle>> GetAll()
+        public async Task<IEnumerable<BlogArticle>> All()
         {
             return await _db.BlogArticles.ToListAsync();
         }

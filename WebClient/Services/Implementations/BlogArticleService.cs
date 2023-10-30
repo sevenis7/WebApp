@@ -5,7 +5,7 @@ using HttpClientJsonExtensions = System.Net.Http.Json.HttpClientJsonExtensions;
 
 namespace WebClient.Services.Implementations
 {
-    public class BlogArticleService : IBlogArticleService
+    public class BlogArticleService : IService<BlogArticle>
     {
         private readonly HttpClient _httpClient;
 
@@ -20,7 +20,7 @@ namespace WebClient.Services.Implementations
 
             if (!response.IsSuccessStatusCode) return null;
 
-            return await response.Content.ReadAsAsync<BlogArticle>();
+            return await response.Content.ReadFromJsonAsync<BlogArticle>();
         }
 
         public async Task<IEnumerable<BlogArticle>> All()
@@ -34,12 +34,21 @@ namespace WebClient.Services.Implementations
 
             if (!response.IsSuccessStatusCode) return null;
 
-            return await response.Content.ReadAsAsync<BlogArticle>();
+            return await response.Content.ReadFromJsonAsync<BlogArticle>();
         }
 
         public async Task<BlogArticle?> Post(BlogArticle blogArticle)
         {
             var response = await HttpClientJsonExtensions.PostAsJsonAsync(_httpClient, "blogarticle", blogArticle);
+
+            if (!response.IsSuccessStatusCode) return null;
+
+            return await response.Content.ReadFromJsonAsync<BlogArticle>();
+        }
+
+        public async Task<BlogArticle?> Edit(int id, BlogArticle entity)
+        {
+            var response = await HttpClientJsonExtensions.PostAsJsonAsync(_httpClient, $"blogarticle/{id}", entity);
 
             if (!response.IsSuccessStatusCode) return null;
 

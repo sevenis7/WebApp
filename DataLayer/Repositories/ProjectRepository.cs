@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataLayer.Repositories
 {
-    public class ProjectRepository : IProjectRepository
+    public class ProjectRepository : IRepository<Project>
     {
         private readonly AppDbContext _db;
 
@@ -20,7 +20,7 @@ namespace DataLayer.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task<Project?>? Get(int id)
+        public async Task<Project?> Get(int id)
         {
             return await _db.Projects.FirstOrDefaultAsync(p => p.Id == id);
         }
@@ -37,7 +37,7 @@ namespace DataLayer.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Project>?>? GetAll()
+        public async Task<IEnumerable<Project>> All()
         {
             return await _db.Projects.ToListAsync();
         }
