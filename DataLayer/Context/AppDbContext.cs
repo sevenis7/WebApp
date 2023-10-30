@@ -20,8 +20,8 @@ namespace DataLayer.Context
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
-            //Database.EnsureDeleted();
-            //Database.EnsureCreated();
+            Database.EnsureDeleted();
+            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -154,35 +154,35 @@ namespace DataLayer.Context
                     Id = 1,
                     Title = "Test",
                     Description = "Test",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
                 },
                 new Project
                 {
                     Id = 2,
                     Title = "Test2",
                     Description = "Test2",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
                 },
                 new Project
                 {
                     Id = 3,
                     Title = "Test3",
                     Description = "Test3",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
                 },
                 new Project
                 {
                     Id = 4,
                     Title = "Test4",
                     Description = "Test4",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
                 },
                 new Project
                 {
                     Id = 5,
                     Title = "Test5",
                     Description = "Test5",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes(@"C:\Users\callm\Desktop\m.jpg"))
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
                 },
             };
 
@@ -191,7 +191,7 @@ namespace DataLayer.Context
                 new()
                 {
                     Id = 1,
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("C:\\Users\\callm\\Desktop\\S.jpg")),
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png")),
                     PublicationDate = new DateTime(2022,10,10),
                     Description = "test short tescription",
                     Title = "test Title",

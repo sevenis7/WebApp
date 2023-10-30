@@ -6,12 +6,14 @@
 <EditForm Model="articleModel" OnValidSubmit=Submit>
     <DataAnnotationsValidator />
     <InputText @bind-Value=@articleModel.Title></InputText>
+    <ValidationMessage For="()=>articleModel.Title"></ValidationMessage>
     <InputText @bind-Value=@articleModel.Description></InputText>
+    <ValidationMessage For="()=>articleModel.Description"></ValidationMessage>
     <InputTextArea @bind-Value=@articleModel.Text></InputTextArea>
+    <ValidationMessage For="()=>articleModel.Text"></ValidationMessage>
     <InputText @bind-Value=@articleModel.ImageBase64></InputText>
     <img src="data:image/jpeg;base64, @articleModel.ImageBase64" />
     <InputFile OnChange="Loading">Select image</InputFile>
-    <ValidationMessage For="@(()=>articleModel.ImageBase64)"></ValidationMessage>
     <button type="submit">
         Create
     </button>
