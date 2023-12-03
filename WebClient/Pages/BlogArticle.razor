@@ -1,0 +1,25 @@
+﻿@page "/blog-articles/{id:int}"
+@inject IService<DataLayer.Entities.BlogArticle> BlogArticleService
+
+<h3>BlogArticle</h3>
+
+@if(articleModel != null)
+{
+    <h3>@articleModel.PublicationDate.ToShortDateString()</h3>
+    <h3>@articleModel.Title</h3>
+    <h3>@articleModel.Description</h3>
+
+    <img src="data:image/jpeg;base64, @articleModel.ImageBase64" />
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    DataLayer.Entities.BlogArticle? articleModel;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        articleModel = await BlogArticleService.Get(Id);
+    }
+}

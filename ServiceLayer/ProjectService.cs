@@ -22,6 +22,9 @@ namespace ServiceLayer
         {
             if (project == null) return null;
 
+            if (string.IsNullOrEmpty(project.ImageBase64)) 
+                project.ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("Images\\default-image.jpg"));
+
             await _projectRepository.Add(project);
 
             return project;

@@ -7,9 +7,11 @@ namespace DataLayer.Entities
         public int Id { get; set; }
         [Required]
         public string? Title { get; set; }
-        [Required]
+
         public string? ImageBase64 { get; set; }
+
         [Required]
         public string? Description { get; set; }
+
     }
 }

@@ -1,7 +1,5 @@
 ﻿using DataLayer.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DataLayer.Context
 {
@@ -22,8 +20,8 @@ namespace DataLayer.Context
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
+            //Database.EnsureDeleted();
+            //Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,7 +31,7 @@ namespace DataLayer.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            List<User> users = new List<User>
+                List<User> users = new List<User>
             {
                 new User
                 {
@@ -156,36 +154,8 @@ namespace DataLayer.Context
                     Id = 1,
                     Title = "Test",
                     Description = "Test",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
-                },
-                new Project
-                {
-                    Id = 2,
-                    Title = "Test2",
-                    Description = "Test2",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
-                },
-                new Project
-                {
-                    Id = 3,
-                    Title = "Test3",
-                    Description = "Test3",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
-                },
-                new Project
-                {
-                    Id = 4,
-                    Title = "Test4",
-                    Description = "Test4",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
-                },
-                new Project
-                {
-                    Id = 5,
-                    Title = "Test5",
-                    Description = "Test5",
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png"))
-                },
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("Images\\default-image.jpg"))
+                }
             };
 
             List<BlogArticle> blogArticles = new()
@@ -193,11 +163,11 @@ namespace DataLayer.Context
                 new()
                 {
                     Id = 1,
-                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("images\\logo.png")),
+                    ImageBase64 = Convert.ToBase64String(File.ReadAllBytes("Images\\default-image.jpg")),
                     PublicationDate = new DateTime(2022,10,10),
                     Description = "test short tescription",
                     Title = "test Title",
-                    Text = "blablalablablalablablalablablalablablalablablalablablalablablala"
+                    Text = "TestText"
                 }
             };
 
@@ -207,7 +177,7 @@ namespace DataLayer.Context
                 {
                     Id = 1,
                     Title = "OUR MAIN SERVICE",
-                    Text = "bla",
+                    Text = "TextTest",
                 }
             };
 

@@ -3,11 +3,11 @@
 
 <h3>Projects</h3>
 
+<a href="/new-project">Create new project</a>
 
 @if (ListProjects.Count() > 0)
 {
-    <a href="/new-project">Create new project</a>
-    <ul>
+    <ul style="list-style-type: none">
         @foreach (var projectItem in ListProjects)
         {
             <li>
@@ -30,6 +30,7 @@
     protected override async Task OnInitializedAsync()
     {
         ListProjects = await ProjectService.All();
+
     }
 
     private async void Delete(int id)

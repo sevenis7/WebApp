@@ -5,18 +5,19 @@
 
 <EditForm Model="projectModel" OnValidSubmit=Submit>
     <DataAnnotationsValidator />
+    <label>Project title:</label>
     <InputText @bind-Value=@projectModel.Title></InputText>
-    <ValidationMessage For="()=>projectModel.Title"></ValidationMessage>
+    <label>Project description:</label>
     <InputTextArea @bind-Value=@projectModel.Description></InputTextArea>
-    <ValidationMessage For="(()=>projectModel.Description)"></ValidationMessage>
-    <img src="data:image/jpeg;base64, @projectModel.ImageBase64"/>
-    <InputFile OnChange="Loading">Select image</InputFile>
+    @if (!string.IsNullOrEmpty(projectModel.ImageBase64))
+    {
+        <img src="data:image/jpeg;base64, @projectModel.ImageBase64" />
+    }
+    <InputFile OnChange="Loading" oncancel=@Clear>Select image</InputFile>
     <button type="submit">
         Create
     </button>
-    <button @onclick="Clear">Clear</button>
 </EditForm>
-
 
 @code {
     DataLayer.Entities.Project? projectModel = new();
@@ -36,18 +37,13 @@
 
     private async Task Submit()
     {
-        var result = await Js.InvokeAsync<bool>("confirm", "Create new project?");
+        await ProjectService.Post(projectModel!);
 
-        if (result)
-        {
-            await ProjectService.Post(projectModel!);
-
-            NavManager.NavigateTo("projects");
-        }
+        NavManager.NavigateTo("projects");
     }
 
     private void Clear()
     {
-        projectModel.ImageBase64 = "";
+        projectModel.ImageBase64 = null;
     }
 }

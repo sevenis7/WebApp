@@ -1,10 +1,11 @@
 ﻿@page "/new-blog-article"
-@inject IService<BlogArticle> BlogArticleService
+@inject IService<DataLayer.Entities.BlogArticle> BlogArticleService
 
 <h3>NewBlogArticle</h3>
 
 <EditForm Model="articleModel" OnValidSubmit=Submit>
     <DataAnnotationsValidator />
+    <label ></label>
     <InputText @bind-Value=@articleModel.Title></InputText>
     <ValidationMessage For="()=>articleModel.Title"></ValidationMessage>
     <InputText @bind-Value=@articleModel.Description></InputText>
@@ -12,15 +13,18 @@
     <InputTextArea @bind-Value=@articleModel.Text></InputTextArea>
     <ValidationMessage For="()=>articleModel.Text"></ValidationMessage>
     <InputText @bind-Value=@articleModel.ImageBase64></InputText>
-    <img src="data:image/jpeg;base64, @articleModel.ImageBase64" />
-    <InputFile OnChange="Loading">Select image</InputFile>
+    @if (!string.IsNullOrEmpty(articleModel.ImageBase64))
+    {
+        <img src="data:image/jpeg;base64, @articleModel.ImageBase64" />
+    }
+    <InputFile OnChange="Loading" oncancel="@Clear">Select image</InputFile>
     <button type="submit">
         Create
     </button>
 </EditForm>
 
 @code {
-    BlogArticle? articleModel = new();
+    DataLayer.Entities.BlogArticle? articleModel = new();
 
     private async Task Loading(InputFileChangeEventArgs e)
     {
@@ -37,13 +41,14 @@
 
     private async Task Submit()
     {
-        var result = await Js.InvokeAsync<bool>("confirm", "Create new blog post?");
+        await BlogArticleService.Post(articleModel!);
 
-        if (result)
-        {
-            await BlogArticleService.Post(articleModel!);
-
-            NavManager.NavigateTo("projects");
-        }
+        NavManager.NavigateTo("blog-articles");
     }
+
+    private void Clear()
+    {
+        articleModel.ImageBase64 = null;
+    }
+
 }
